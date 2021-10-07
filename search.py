@@ -1,4 +1,4 @@
-'''Search routines.
+:'''Search routines.
    A) Class StateSpace
 
       An abstract base class for representing the states in a search

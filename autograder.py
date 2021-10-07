@@ -10,8 +10,8 @@ test_time_gbfs = False
 test_manhattan = False
 test_fval_function = False
 test_anytime_gbfs = False
-test_alternate = False
-test_anytime_weighted_astar = True
+test_alternate = True
+test_anytime_weighted_astar = False
 
 # My own test to print heuristics for a single state
 test_state = False
