@@ -73,19 +73,145 @@ def corner_stuck(box, state):
 
 def edge_no_colinear(box, state):
     box_left, box_right, box_up, box_down = (box[0] == 0), (box[0] == state.width - 1), (box[1] == 0), (box[1] == state.height - 1)
+
     if box_left:
         left_goals = [storage for storage in state.storage if storage[0] == 0]
         if left_goals == []:
             return True
-        left_obs = [obstacle for obstacle in state.obstacle if obstacle[0] == 0]
+        left_obs = [obstacle for obstacle in state.obstacles if obstacle[0] == 0]
+        if left_obs != []:
+            print(state.print_state())
+            print(f'Obstacles on Left: {left_obs}')
+            left_goals_height = [height[1] for height in left_goals]
+            left_obs_height = [height[1] for height in left_obs]
+            box_height = box[1]
 
-        left_goals_height = [height[1] for height in left_goals]
-        left_obs_height = [height[1] for height in left_obs]
+            if (box_height < min(obstacle for obstacle in left_obs_height if obstacle > box_height)) and (min(obstacle for obstacle in left_obs_height if obstacle > box_height)<min(goal for goal in left_goals_height if goal > box_height)):
+                print(
+                f"Stuck, Box On Left, Box Height: {box_height}, Goal Heights: {left_goals_height}, Obstacle Heights: {left_obs_height}")
+                return True
 
-        box_height = box[1]
+            if (box_height > max(obstacle for obstacle in left_obs_height if obstacle < box_height)) and (max(obstacle for obstacle in left_obs_height if obstacle < box_height)<max(goal for goal in left_goals_height if goal < box_height)):
+                print(
+                f"Stuck, Box On Left, Box Height: {box_height}, Goal Heights: {left_goals_height}, Obstacle Heights: {left_obs_height}")
+                return True
+        return False
 
-        #blocked_up
+    if box_right:
+        right_goals = [storage for storage in state.storage if storage[0] == state.width - 1]
+        if right_goals == []:
+            return True
+        right_obs = [obstacle for obstacle in state.obstacles if obstacle[0] == state.width - 1]
+        if right_obs != []:
+            print(state.print_state())
+            print(f'Obstacles on Right: {right_obs}')
+            right_goals_height = [height[1] for height in right_goals]
+            right_obs_height = [height[1] for height in right_obs]
+            box_height = box[1]
 
+            if (box_height < min(obstacle for obstacle in right_obs_height if obstacle > box_height)) and (
+                    min(obstacle for obstacle in right_obs_height if obstacle > box_height) < min(
+                    goal for goal in right_goals_height if goal > box_height)):
+                print(
+                    f"Stuck, Box On Right, Box Height: {box_height}, Goal Heights: {right_goals_height}, Obstacle Heights: {right_obs_height}")
+                return True
+
+            if (box_height > max(obstacle for obstacle in right_obs_height if obstacle < box_height)) and (
+                    max(obstacle for obstacle in right_obs_height if obstacle < box_height) < max(
+                    goal for goal in right_goals_height if goal < box_height)):
+                print(
+                    f"Stuck, Box On Right, Box Height: {box_height}, Goal Heights: {right_goals_height}, Obstacle Heights: {right_obs_height}")
+                return True
+        return False
+
+    if box_up:
+        up_goals = [storage for storage in state.storage if storage[1] == 0]
+        if up_goals == []:
+            return True
+        up_obs = [obstacle for obstacle in state.obstacles if obstacle[1] == 0]
+        if up_obs != []:
+            print(state.print_state())
+            print(f'Obstacles on Up: {up_obs}')
+            up_goals_height = [height[0] for height in up_goals]
+            up_obs_height = [height[0] for height in up_obs]
+            box_height = box[0]
+
+            if (box_height < min(obstacle for obstacle in up_obs_height if obstacle > box_height)) and (
+                    min(obstacle for obstacle in up_obs_height if obstacle > box_height) < min(
+                goal for goal in up_goals_height if goal > box_height)):
+                print(
+                    f"Stuck, Box On Up, Box Height: {box_height}, Goal Heights: {up_goals_height}, Obstacle Heights: {up_obs_height}")
+                return True
+
+            if (box_height > max(obstacle for obstacle in up_obs_height if obstacle < box_height)) and (
+                    max(obstacle for obstacle in up_obs_height if obstacle < box_height) < max(
+                goal for goal in up_goals_height if goal < box_height)):
+                print(
+                    f"Stuck, Box On Right, Box Height: {box_height}, Goal Heights: {up_goals_height}, Obstacle Heights: {up_obs_height}")
+                return True
+        return False
+
+    if box_down:
+        down_goals = [storage for storage in state.storage if storage[1] == state.height - 1]
+        if down_goals == []:
+            return True
+        down_obs = [obstacle for obstacle in state.obstacles if obstacle[1] == state.height - 1]
+        if down_obs != []:
+            print(state.print_state())
+            print(f'Obstacles on Up: {down_obs}')
+            down_goals_height = [height[0] for height in down_goals]
+            down_obs_height = [height[0] for height in down_obs]
+            box_height = box[0]
+
+            if (box_height < min(obstacle for obstacle in down_obs_height if obstacle > box_height)) and (
+                    min(obstacle for obstacle in down_obs_height if obstacle > box_height) < min(
+                goal for goal in down_goals_height if goal > box_height)):
+                print(
+                    f"Stuck, Box On Up, Box Height: {box_height}, Goal Heights: {down_goals_height}, Obstacle Heights: {down_obs_height}")
+                return True
+
+            if (box_height > max(obstacle for obstacle in down_obs_height if obstacle < box_height)) and (
+                    max(obstacle for obstacle in down_obs_height if obstacle < box_height) < max(
+                goal for goal in down_goals_height if goal < box_height)):
+                print(
+                    f"Stuck, Box On Right, Box Height: {box_height}, Goal Heights: {down_goals_height}, Obstacle Heights: {down_obs_height}")
+                return True
+        return False
+    return False
+
+def adj_edge_boxes(state):
+    boxes_on_edge = [[],[],[],[]]
+    storage = state.storage
+    for box in state.boxes:
+        box_left, box_right, box_up, box_down = (box[0] == 0), (box[0] == state.width - 1), (box[1] == 0), (box[1] == state.height - 1)
+        if box_left:
+            boxes_on_edge[0].append(box)
+        if box_right:
+            boxes_on_edge[1].append(box)
+        if box_up:
+            boxes_on_edge[2].append(box)
+        if box_down:
+            boxes_on_edge[3].append(box)
+    if len(boxes_on_edge[0]) > 1:
+        boxes = sorted(boxes_on_edge[0], key=lambda tup: tup[1])
+        for i in range(0,len(boxes)-1):
+            if boxes[i][1] +1 == boxes[i+1][1] and not ((boxes[i] in storage) and (boxes[i+1] in storage)):
+                return True
+    if len(boxes_on_edge[1]) > 1:
+        boxes = sorted(boxes_on_edge[1], key=lambda tup: tup[1])
+        for i in range(0,len(boxes)-1):
+            if boxes[i][1] +1 == boxes[i+1][1] and not ((boxes[i] in storage) and (boxes[i+1] in storage)):
+                return True
+    if len(boxes_on_edge[2]) > 1:
+        boxes = sorted(boxes_on_edge[2], key=lambda tup: tup[0])
+        for i in range(0,len(boxes)-1):
+            if boxes[i][0] +1 == boxes[i+1][0] and not ((boxes[i] in storage) and (boxes[i+1] in storage)):
+                return True
+    if len(boxes_on_edge[3]) > 1:
+        boxes = sorted(boxes_on_edge[3], key=lambda tup: tup[0])
+        for i in range(0,len(boxes)-1):
+            if boxes[i][0] +1 == boxes[i+1][0] and not ((boxes[i] in storage) and (boxes[i+1] in storage)):
+                return True
     return False
 
 
@@ -110,38 +236,27 @@ def heur_alternate(state):
     # unfilled boxes and storage
     unfilled_storage = list(set(storage) - set(boxes))
     unstored_boxes = list(set(boxes) - set(storage))
+    if len(unstored_boxes) == 0:
+        return 0
 
     # check if boxes are stuck (against wall with no colinear goal, against corners)
     for box in unstored_boxes:
         if corner_stuck(box, state):
             return float("inf")
-        #if edge_no_colinear(box, state):
-            #return float("inf")
+        if edge_no_colinear(box, state):
+            return float("inf")
 
+    if adj_edge_boxes(state):
+        return float("inf")
 
-
-    #Use minimal pairs (pair off two sets such that the sum of difference between is minimized)
     # This problem is called least weight minimal pairing, and apparently very hard, my solution is just loop boxes and storage, pull out minimal minimal distance each loop until no more boxes/storage
     # left_boxes, left_storage = unstored_boxes, unfilled_storage
-    left_boxes, left_storage = boxes, storage
+    left_boxes, left_storage = unstored_boxes, unfilled_storage
+
+    # Penalize for not storing boxes
+    #heur_value += 5*len(unstored_boxes)
 
     while (left_boxes != []) and (left_storage != []):
-        '''
-        remove_box, remove_store, min_min_dist = None, None, float("inf")
-        for box in left_boxes:
-            min_dist = float("inf")
-            select_store = None
-
-            for store in left_storage:
-                dist_box_store = calc_manhattan_distance(box, store)
-                if dist_box_store < min_dist:
-                    select_store, min_dist = store, dist_box_store
-            if min_dist < min_min_dist:
-                remove_box, remove_store, min_min_dist = box, select_store, min_dist
-
-        left_boxes, left_storage = list(set(left_boxes) - set([remove_box])), list(set(left_storage) - set([remove_store]))
-        heur_value += min_min_dist
-        '''
 
         remove_box, remove_store, max_min_dist = None, None, -1
         for box in left_boxes:
@@ -159,24 +274,30 @@ def heur_alternate(state):
             set(left_storage) - set([remove_store]))
         heur_value += max_min_dist
 
-        #print(f"Min Pair: box selected: {remove_box}, storage selected: {remove_store}")
-        #print(f"heuristic = {heur_value}")
-
     # Calculate distance from non stored boxes to nearest robot, add to heuristic
     for box in unstored_boxes:
-        #print(f'checking box {box}')
         closest_robot, min_dist = None, float("inf")
 
         for robot in robots:
-            #print(f'checking robot {robot}')
-            #dist_box_robot = calc_manhattan_distance(box, robot) # consider diagonal moves = 1, allow robot to explore more
-            dist_box_robot = calc_diag_manhattan_distance(box, robot) # consider diagonal moves = 1, allow robot to explore more
+            dist_box_robot = calc_manhattan_distance(box, robot) # consider diagonal moves = 1, allow robot to explore more
+            #dist_box_robot = calc_diag_manhattan_distance(box, robot) # consider diagonal moves = 1, allow robot to explore more
             # print(f'Diag Dist: {dist_box_robot}')
             if dist_box_robot < min_dist:
                 min_dist, closest_robot = dist_box_robot, robot
-        #print(f"Box {box} paired with robot {closest_robot}")
         heur_value += min_dist
-        #print(f'heuristic = {heur_value}')
+
+    #Keep Robots Close To Unstored Boxes
+    max_robot_dist_to_box = -1
+    for robot in robots:
+        min_dist = float("inf")
+        for box in unstored_boxes:
+            dist_box_robot = calc_manhattan_distance(box, robot) # consider diagonal moves = 1, allow robot to explore more
+            if dist_box_robot < min_dist:
+                min_dist = dist_box_robot
+        if max_robot_dist_to_box < min_dist:
+            max_robot_dist_to_box = min_dist
+
+    heur_value += max(8, max_robot_dist_to_box)
 
     return heur_value
 
@@ -214,48 +335,75 @@ def anytime_weighted_astar(initial_state, heur_fn, weight=10., timebound = 5):
     '''OUTPUT: A goal state (if a goal is found), else False'''
     '''implementation of anytime weighted astar algorithm'''
 
-    # heuristics override
+    # overrides
     heur_fn = heur_alternate
-    weight = 10
+    weight = 2
 
-    start_time = current_time = os.times()[0]
+    start_time = os.times()[0]
     end_time = start_time + timebound
     engine = SearchEngine(strategy='custom', cc_level='full')
     engine.init_search(initial_state, sokoban_goal_state, heur_fn, (lambda sN: fval_function(sN, weight)))
-    costbound = (float('inf'), float('inf'), float('inf'))
-    timebound = end_time - os.times()[0]
+    cost = (float('inf'), float('inf'), float('inf'))
+    timeout = end_time - os.times()[0]
 
-    # initial search
-    best_path = engine.search(timebound, costbound)[0]
+    best_path = engine.search(timeout, cost)[0]
     if not best_path:
         return False
-    # costbound = (float('inf'), float('inf'), best_path.gval)
-    # If we are searching for paths with lower cost than the current path (let's say g_curr),
-    # then given that the heuristic function is admissible,
-    # (0 <= g-value <= g_curr) and (g-value + h-value <= g_curr), so (h-value <= g_curr).
-    costbound = (best_path.gval, best_path.gval, best_path.gval)
-    timebound = end_time - os.times()[0]
 
-    # search again if time is left and frontier is not empty
-    while timebound > 0 and not engine.open.empty():
-        weight -= (weight - 1.0) / 2
+    cost = (best_path.gval, best_path.gval, best_path.gval)
+    timeout = end_time - os.times()[0]
+
+    # search again if time is left, frontier isn't empty and cut the weight in half
+    while timeout > 0 and not engine.open.empty():
+        weight = weight / 2
         engine.init_search(initial_state, sokoban_goal_state, heur_fn, (lambda sN: fval_function(sN, weight)))
-        path = engine.search(timebound, costbound)[0]
+        path = engine.search(timebound, cost)[0]
         if not path:
             break
         if path.gval < best_path.gval:
             best_path = path
-            # costbound = (float('inf'), float('inf'), best_path.gval)
-            costbound = (best_path.gval, best_path.gval, best_path.gval)
-        timebound = end_time - os.times()[0]
+            cost = (best_path.gval, best_path.gval, best_path.gval)
+        timeout = end_time - os.times()[0]
 
     return best_path
 
 
 def anytime_gbfs(initial_state, heur_fn, timebound = 10):
-#IMPLEMENT
-  '''Provides an implementation of anytime greedy best-first search, as described in the HW1 handout'''
-  '''INPUT: a sokoban state that represents the start state and a timebound (number of seconds)'''
-  '''OUTPUT: A goal state (if a goal is found), else False'''
-  '''implementation of anytime greedy best-first search'''
-  return False
+    #IMPLEMENT
+    '''Provides an implementation of anytime greedy best-first search, as described in the HW1 handout'''
+    '''INPUT: a sokoban state that represents the start state and a timebound (number of seconds)'''
+    '''OUTPUT: A goal state (if a goal is found), else False'''
+    '''implementation of anytime greedy best-first search'''
+
+
+    # override default parameters
+    heur_fn = heur_alternate
+
+    # initialization
+    start_time = current_time = os.times()[0]
+    end_time = start_time + timebound
+    engine = SearchEngine(strategy='best_first', cc_level='full')
+    engine.init_search(initial_state, sokoban_goal_state, heur_fn)
+    cost = (float("inf"), float("inf"), float("inf"))
+    timeout = end_time - os.times()[0]
+
+    # initial search
+    best_path = engine.search(timeout, cost)[0]
+    if not best_path:
+        return False
+
+    cost = (best_path.gval, best_path.gval, best_path.gval)
+    timeout = end_time - os.times()[0]
+
+    # search again if time is left and frontier is not empty
+    while timeout > 0 and not engine.open.empty():
+        path = engine.search(timeout, cost)[0]
+        if not path:
+            break
+        if path.gval < best_path.gval:
+            best_path = path
+            cost = (best_path.gval, best_path.gval, best_path.gval)
+        timeout = end_time - os.times()[0]
+
+    return best_path
+
